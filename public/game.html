@@ -396,8 +396,6 @@
       <p class="sub">Press Esc or click Resume to get back in</p>
       <button id="resumebtn" class="menu-btn primary">Resume</button>
       <button id="pausemainmenubtn" class="menu-btn">Main Menu</button>
-      <button id="exitgamebtn" class="menu-btn">Exit Game</button>
-      <p id="exitgamemsg" style="display:none; color:#8a8f99; font-size:12px; margin-top:10px;">Your browser won't let a page close its own tab — you can close this tab manually to exit.</p>
     </div>
   </div>
 </div>
@@ -815,10 +813,7 @@ document.getElementById('resumebtn').addEventListener('click', () => {
 document.getElementById('pausemainmenubtn').addEventListener('click', () => {
   location.reload();
 });
-document.getElementById('exitgamebtn').addEventListener('click', () => {
-  window.close();
-  setTimeout(() => { document.getElementById('exitgamemsg').style.display = 'block'; }, 250);
-});
+
 
 document.addEventListener('mousemove', (e) => {
   if (!pointerLocked || !player.alive) return;
