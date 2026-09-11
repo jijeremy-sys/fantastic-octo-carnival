@@ -2222,7 +2222,7 @@ function updateHUD() {
   const hpBarFill = document.querySelector('#hpbar .barfill');
   hpBarFill.style.width = hpPct + '%';
   const hpPill = document.querySelector('#hud .stat-pill.hp');
-  const lowHp = hpPct <= 25;
+  const lowHp = hpPct <= 50;
   hpPill.classList.toggle('low', lowHp);
   hpBarFill.classList.toggle('low', lowHp);
   const w = weapons[currentSlot];
