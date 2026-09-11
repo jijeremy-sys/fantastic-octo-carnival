@@ -378,6 +378,22 @@
     font-weight: 700; white-space: nowrap;
   }
   #toast.show { transform: translateX(-50%) translateY(0); }
+
+  #reloadindicator {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, 32px);
+    font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; color: var(--accent); text-shadow: 0 0 12px rgba(61,255,160,0.5);
+    z-index: 6; user-select: none; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.22,1,0.36,1);
+  }
+  #reloadindicator.active {
+    opacity: 1; transform: translate(-50%, 40px);
+    animation: reloadPulse 0.8s ease-in-out infinite;
+  }
+  @keyframes reloadPulse {
+    0%, 100% { text-shadow: 0 0 12px rgba(61,255,160,0.5); }
+    50% { text-shadow: 0 0 20px rgba(61,255,160,0.8), 0 0 36px rgba(61,255,160,0.3); }
+  }
 </style>
 </head>
 <body>
@@ -478,6 +494,7 @@
     <span class="val"><span id="ammo">30</span>/<span id="reserve">90</span></span>
   </div>
 </div>
+<div id="reloadindicator">RELOADING</div>
 <div id="wave">
   <span>WAVE <b id="wavenum">1</b></span>
   <span class="sep">|</span>
@@ -1519,6 +1536,7 @@ function explodeGrenade(g) {
 }
 
 let reloading = false;
+const reloadIndicator = document.getElementById('reloadindicator');
 function reload() {
   const w = weapons[currentSlot];
   if (w.type !== 'gun') return;
@@ -1526,6 +1544,8 @@ function reload() {
   reloading = true;
   canShoot = false;
   const delay = 900 * perks.reloadMult;
+  weaponAnim = { kind: 'reload', start: performance.now(), dur: delay };
+  reloadIndicator.classList.add('active');
   setTimeout(() => {
     const needed = w.maxAmmo - w.ammo;
     const take = Math.min(needed, w.reserve);
@@ -1533,6 +1553,7 @@ function reload() {
     w.reserve -= take;
     reloading = false;
     canShoot = true;
+    reloadIndicator.classList.remove('active');
     updateHUD();
   }, delay);
 }
@@ -2546,6 +2567,13 @@ function animate() {
           gunModel.position.x = -0.3 + 0.55 * e;
           gunModel.position.y = 0.05 * Math.sin(p * Math.PI);
           gunModel.position.z = -0.18 * Math.sin(p * Math.PI);
+        } else if (weaponAnim.kind === 'reload') {
+          // dip down and rotate as if swapping a mag, then snap back up
+          const dip = Math.sin(p * Math.PI);
+          gunModel.rotation.x = 0.5 * dip;
+          gunModel.rotation.z = -0.18 * dip;
+          gunModel.position.y = -0.22 * dip;
+          gunModel.position.z = 0.16 * dip;
         } else if (weaponAnim.kind === 'utility') {
           const k = Math.sin(p * Math.PI);
           gunModel.rotation.x = -0.9 * k;
